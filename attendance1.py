@@ -14,24 +14,34 @@ date = datetime.date.today()
 print(f"Attendance for {date}:")
 ws.cell(row=1, column=next_col, value=date)
 
-for row_idx, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=True)):
+def take_attendance(row_idx, row):
     reg_num, name = row[:2]
-    attendance = input(f"Enter attendance for {name} ({reg_num}): (p)resent or (a)bsent: ")
-    if attendance.lower() == "p":
-        ws.cell(row=row_idx + 2, column=next_col, value=1)
-        ws.cell(row=row_idx + 2, column=3, value=ws.cell(row=row_idx + 2, column=3).value + 1)
-    elif attendance.lower() == "a":
-        ws.cell(row=row_idx + 2, column=next_col, value=0)
-    else:
-        print("Invalid input. Please enter 'p' or 'a'.")
+    while True:
+        attendance = input(f"Enter attendance for {name} ({reg_num}): (p)resent or (a)bsent: ")
+        if attendance.lower() == "p":
+            ws.cell(row=row_idx + 2, column=next_col, value=1)
+            if ws.cell(row=row_idx + 2, column=3).value is None:
+                ws.cell(row=row_idx + 2, column=3, value=1)
+            else:
+                ws.cell(row=row_idx + 2, column=3, value=ws.cell(row=row_idx + 2, column=3).value + 1)
+            if ws.cell(row=row_idx + 2, column=4).value is None:
+                ws.cell(row=row_idx + 2, column=4, value=1)
+            else:
+                ws.cell(row=row_idx + 2, column=4, value=ws.cell(row=row_idx + 2, column=4).value + 1)
+            break
+        elif attendance.lower() == "a":
+            ws.cell(row=row_idx + 2, column=next_col, value=0)
+            if ws.cell(row=row_idx + 2, column=3).value is None:
+                ws.cell(row=row_idx + 2, column=3, value=1)
+            else:
+                ws.cell(row=row_idx + 2, column=3, value=ws.cell(row=row_idx + 2, column=3).value + 1)
+            break
+        else:
+            print("Invalid input. Please enter 'p' or 'a'.")
+            take_attendance(row_idx, row)
 
-# Calculate attendance percentage
-# for row_idx, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=True)):
-#     reg_num, name = row[:2]
-#     total_classes = ws.max_column - 2
-#     present_classes = sum([cell.value for cell in ws[row_idx + 2][2:]])
-#     attendance_percentage = (present_classes / total_classes) * 100
-#     ws.cell(row=row_idx + 2, column=next_col + 1, value=attendance_percentage)
+for row_idx, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=True)):
+    take_attendance(row_idx, row)
 
 # Save the Excel workbook
 wb.save('attendance.xlsx')
