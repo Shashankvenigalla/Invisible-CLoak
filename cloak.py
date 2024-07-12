@@ -29,8 +29,35 @@ def apply_cloak_effect(frame, mask, background):
     fg = cv2.bitwise_and(frame, frame, mask=mask_inv)
     bg = cv2.bitwise_and(background, background, mask=mask)
     return cv2.add(fg, bg)
-
+def colors():
+    return input()
+def colorselection(color):
+    if color=="B":
+        lower_blue = np.array([90, 50, 50])
+        upper_blue = np.array([130, 255, 255])
+        return lower_blue,upper_blue
+    elif color=='b':
+        lower_black = np.array([0, 0, 0])
+        upper_black = np.array([30, 30, 30])
+        return lower_black,upper_black
+    elif color=="w":
+        lower_white = np.array([245, 245, 245])
+        upper_white = np.array([255, 255, 255])
+        return lower_white,upper_white
+    elif color=="R":
+        lower_red = np.array([0, 0, 120])
+        upper_red = np.array([10, 10, 255])
+        return lower_red,upper_red
+    elif color=="Y":
+        lower_yellow = np.array([120, 150, 0])
+        upper_yellow = np.array([255, 255, 150])
+        return lower_red,upper_red
+    else:
+        print("Enter the Correct input")
 def main():
+    print("Enter wich color do u want?")
+    print("Select 'B' for BLue \n 'b' for black\n 'w' for white\n 'R' for Red\n 'Y' for Yellow" )
+    color=colors()
     print("OpenCV version:", cv2.__version__)
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -42,14 +69,14 @@ def main():
         print(f"Error: {e}")
         cap.release()
         return
-    lower_blue = np.array([90, 50, 50])
-    upper_blue = np.array([130, 255, 255])
+    lower,upper=colorselection(color)
+    
     print("Starting main loop. Press 'q' to quit")
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        mask = create_mask(frame, lower_blue, upper_blue)
+        mask = create_mask(frame, lower, upper)
         output = apply_cloak_effect(frame, mask, background)
         cv2.imshow('Cloak Effect', output)
         if cv2.waitKey(1) & 0xFF == ord('q'):
